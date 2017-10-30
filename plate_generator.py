@@ -103,7 +103,8 @@ class PlateGenerator():
 
     def get_bounding_box(self, x, y):
         """
-        Returns the bounding box coordinates for a position given where x is the left side and y is te top side.
+        Returns the bounding box coordinates for a letter with a position given where x is the left side and y is the
+        top side.
         Returns [x left, y top, x right, y bottom]
         """
         x_offset = 5
@@ -114,6 +115,9 @@ class PlateGenerator():
         return [x + x_offset, y + y_offset, x + width, y + height]
 
     def get_bounding_box_normalized(self, x, y, image_size):
+        """
+        Normalize the bounding box because YOLO understands the bounding box in percentages of the full image.
+        """
         # Get bounding box
         bounding_box = self.get_bounding_box(x, y)
         # Get parameters
@@ -131,8 +135,8 @@ class PlateGenerator():
 
 
 # ----- MAIN SCRIPT ----- #
-PlateGenerator().generate_random_plates(10,
+PlateGenerator().generate_random_plates(1,
                                         show_bounding_box=False,
-                                        show=False,
-                                        save=True,
-                                        debug_bounding_box_normalized=False)
+                                        show=True,
+                                        save=False,
+                                        debug_bounding_box_normalized=True)
