@@ -1,6 +1,7 @@
 from random import choice
 
 from PIL import Image, ImageDraw, ImageFont
+
 from yolo_categories import CATEGORIES
 
 
@@ -17,6 +18,8 @@ class PlateGenerator():
 
     letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     numbers = "1234567890"
+
+    license_plate_bounding_box = [31, 24, 1330, 464]
 
     def get_chars(self):
         """
@@ -52,6 +55,7 @@ class PlateGenerator():
         if show_bounding_box:
             for x, y, _ in coordinates_and_chars:
                 draw.rectangle(self.get_bounding_box(x, y), outline="black")
+                draw.rectangle(self.license_plate_bounding_box, outline="black")
 
         if debug_bounding_box_normalized:
             for x, y, _ in coordinates_and_chars:
@@ -96,10 +100,20 @@ class PlateGenerator():
             category = CATEGORIES[c]
             return "{0} {1} {2} {3} {4}\n".format(category, center_x, center_y, width, height)
 
-        refactor = self.result_dir + "/" + "".join([tuple[2] for tuple in coordinates_and_chars]) + ".txt"
-        with open(refactor, "w") as f:
+        labels = self.result_dir + "/" + "".join([tuple[2] for tuple in coordinates_and_chars]) + ".txt"
+        with open(labels, "w") as f:
+            # Save chars bounding boxes
             for x, y, c in coordinates_and_chars:
                 f.write(get_string(x, y, c))
+            # Append bounding box for entire license plate
+            category = CATEGORIES["LICENSE-PLATE"]
+            center_x, center_y, width, height = self.normalize_bounding_box(self.license_plate_bounding_box,
+                                                                            image_size)
+            f.write("{0} {1} {2} {3} {4}".format(category,
+                                                 center_x,
+                                                 center_y,
+                                                 width,
+                                                 height))
 
     def get_bounding_box(self, x, y):
         """
@@ -120,6 +134,9 @@ class PlateGenerator():
         """
         # Get bounding box
         bounding_box = self.get_bounding_box(x, y)
+        return self.normalize_bounding_box(bounding_box, image_size)
+
+    def normalize_bounding_box(self, bounding_box, image_size):
         # Get parameters
         width = bounding_box[2] - bounding_box[0]
         center_x = bounding_box[0] + (width / 2)
@@ -135,8 +152,8 @@ class PlateGenerator():
 
 
 # ----- MAIN SCRIPT ----- #
-PlateGenerator().generate_random_plates(1,
+PlateGenerator().generate_random_plates(10,
                                         show_bounding_box=False,
-                                        show=True,
-                                        save=False,
-                                        debug_bounding_box_normalized=True)
+                                        show=False,
+                                        save=True,
+                                        debug_bounding_box_normalized=False)
