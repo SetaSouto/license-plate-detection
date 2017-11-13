@@ -51,4 +51,4 @@ def show_image_with_bounding_boxes(src):
 
 
 # ----- MAIN SCRIPT ----- #
-show_image_with_coords("data/generated_plates/GXYF08.png")
+show_image_with_bounding_boxes("data/generated_plates/GXYF08.png")
