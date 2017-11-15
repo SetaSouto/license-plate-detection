@@ -34,14 +34,40 @@ class ImageGenerator():
 		# Get plates
 		self.plates_paths = [file for file in listdir(self.plate_filepath) if file.endswith('.png')]
 
-	def save_bounding_boxes(self, name):
+	def save_bounding_boxes(self, image_n, plate_n, offset, plate_d, image_d):
 
-		txt_name = name.replace("png", "txt")
-		txt_file = open(self.plate_filepath+"/"+txt_name)
+		txt_name = plate_n.replace("png", "txt")
+		txt_file = open(self.plate_filepath+"/"+txt_name,"r")
 
-		
+		new_txt = open(self.result_dir+"/"+image_n+txt_name,"w")
 
-		print("dummy")
+		for line in txt_file:
+			yolo_class, center_x, center_y, width, height = line.split(" ")
+			center_x = float(center_x)
+			center_y = float(center_y)
+			width = float(width)
+			height = float(height)
+			# Get coordinates
+			x0 = (center_x - width / 2) * plate_d[0] + offset[0]
+			x1 = (center_x + width / 2) * plate_d[0] + offset[0]
+			y0 = (center_y - height / 2) * plate_d[1] + offset[1]
+			y1 = (center_y + height / 2) * plate_d[1] + offset[1]
+			# Get new percentages
+			new_center_x = (x0+x1)/2.0/image_d[0]
+			new_center_y = (y0+y1)/2.0/image_d[1]
+			new_width = (x1-x0)*1.0/image_d[0]
+			new_height = (y1-y0)*1.0/image_d[1]
+
+			new_line = "{0} {1} {2} {3} {4}\n".format(yolo_class,
+            										   new_center_x,
+            										   new_center_y,
+            										   new_width,
+            										   new_height)
+
+			print(new_line)
+			new_txt.write(new_line)
+		txt_file.close()
+		new_txt.close()
 
 
 	def make_images(self, plates_by_image=1, repeat=True, min_image_percentage=0.1,max_image_percentage=0.3, allow_crop=False):
@@ -50,7 +76,7 @@ class ImageGenerator():
 		self.explore_directories()
 
 		if(len(self.plates_paths)/plates_by_image < len(self.images_paths)):
-			print(" Repeating plates because : more images than plates")
+			print(" Repeating plates because : more images than ",plates_by_image,"plates by image")
 			repeat = True
 
 
@@ -67,6 +93,9 @@ class ImageGenerator():
 				plate_names.append(choice(self.plates_paths))
 				if not repeat:
 					self.plates_paths.remove(plate_names[i])
+
+			# New base_name
+			new_image_name = image_name[:image_name.find(".")]+"_plates_"
 
 			# Put plates over the other
 			for plate_name in plate_names:
@@ -98,11 +127,9 @@ class ImageGenerator():
 				image.paste(plate, offset, plate)
 
 				# Modify bounding boxes
-				#self.save_bounding_boxes(image_name,plate_name,offset,(pt_width,pt_height),(im_width,im_height))
+				self.save_bounding_boxes(new_image_name,plate_name,offset,(pt_width,pt_height),(im_width,im_height))
 
-			image.save(self.result_dir+"/"+
-				image_name[:len(image_name)]+
-				"_plates_"+str(plates_by_image)+".png","PNG")
+			image.save(self.result_dir+"/"+new_image_name+plate_name[:plate_name.find(".")]+".png","PNG")
 
 ig = ImageGenerator()
-ig.make_images(2, False, 0.1, 0.3, False)
+ig.make_images(1, False, 0.1, 0.5, False)
