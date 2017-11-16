@@ -12,6 +12,7 @@ class ImageGenerator():
 	result_dir = "{0}/dataset".format(data_dir)
 	images_paths = list()
 	plates_paths = list()
+	used_space = list()
 
 
 	def get_image(self, name):
@@ -27,6 +28,9 @@ class ImageGenerator():
 		return base
 
 	def explore_directories(self):
+		"""
+		Look up files in the directories defined in the class
+		"""
 
 		# Get images
 		self.images_paths = listdir(self.sample_image_filepath)
@@ -34,12 +38,19 @@ class ImageGenerator():
 		# Get plates
 		self.plates_paths = [file for file in listdir(self.plate_filepath) if file.endswith('.png')]
 
-	def save_bounding_boxes(self, image_n, plate_n, offset, plate_d, image_d):
+	def save_bounding_boxes(self, plate_n, offset, plate_d, image_d, text_file):
+		"""
+		Given a plate's name recalculate the relative position and dimensions and
+		save them on a text_file
+		:param plate_n: plate's name
+		:param offset: the plate's position offset on the image
+		:param plate_d: plate's dimensions
+		:param image_d: new image dimensions
+		:param text_file: output file
+		"""
 
 		txt_name = plate_n.replace("png", "txt")
 		txt_file = open(self.plate_filepath+"/"+txt_name,"r")
-
-		new_txt = open(self.result_dir+"/"+image_n+txt_name,"w")
 
 		for line in txt_file:
 			yolo_class, center_x, center_y, width, height = line.split(" ")
@@ -63,15 +74,26 @@ class ImageGenerator():
             										   new_center_y,
             										   new_width,
             										   new_height)
+			text_file.write(new_line)
 
-			print(new_line)
-			new_txt.write(new_line)
 		txt_file.close()
-		new_txt.close()
 
+	def position_is_occupied(self, offset, plate_d):
+		"""
+		Verifies if we are pasting a plate over another
+		"""
 
-	def make_images(self, plates_by_image=1, repeat=True, min_image_percentage=0.1,max_image_percentage=0.3, allow_crop=False):
+		return False
 
+	def make_images(self, plates_by_image=1, repeat=True, min_image_percentage=0.1,max_image_percentage=0.3, allow_crop=False, paste_over=False):
+		"""
+		For the class given directories paste license plates over each image on the directory.
+		:param plates_by_image: number of plates to be pasted on each image.
+		:param repeat: if to repeat license plates given a set of images and plates.
+		:param min_image_percentage: minimum percentage of the image's width to redimension a plate
+		:param max_image_percentage: maximum percentage of the image's width to redimension a plate
+		:param allow_crop: if to allow a plate to be pasted in a position that will crop it
+		"""
 		# Get directories
 		self.explore_directories()
 
@@ -97,6 +119,11 @@ class ImageGenerator():
 			# New base_name
 			new_image_name = image_name[:image_name.find(".")]+"_plates_"
 
+			new_txt = open(self.result_dir+"/"+new_image_name+"_plates_"+str(plates_by_image)+".txt","w")
+
+			# Dimensions already occupied
+			self.used_space = list()
+
 			# Put plates over the other
 			for plate_name in plate_names:
 
@@ -117,7 +144,6 @@ class ImageGenerator():
 				pt_width, pt_height = plate.size
 
 				# New coords
-
 				offset = (0,0)
 				if(allow_crop):
 					offset = (randrange(-pt_width,im_width),randrange(-pt_height,im_height))
@@ -126,10 +152,12 @@ class ImageGenerator():
 
 				image.paste(plate, offset, plate)
 
-				# Modify bounding boxes
-				self.save_bounding_boxes(new_image_name,plate_name,offset,(pt_width,pt_height),(im_width,im_height))
 
-			image.save(self.result_dir+"/"+new_image_name+plate_name[:plate_name.find(".")]+".png","PNG")
+				# Modify bounding boxes
+				self.save_bounding_boxes(plate_name,offset,(pt_width,pt_height),(im_width,im_height), new_txt)
+
+			image.save(self.result_dir+"/"+new_image_name+"_plates_"+str(plates_by_image)+".png","PNG")
+			new_txt.close()
 
 ig = ImageGenerator()
-ig.make_images(1, False, 0.1, 0.5, False)
+ig.make_images(3, False, 0.1, 0.5, True)
