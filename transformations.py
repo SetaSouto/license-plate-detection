@@ -69,7 +69,7 @@ def find_bounding_boxes(image_name,size,transformation):
 
           if(j<y0): # min Y position
             y0 = j
-          elif(i>y1): # max Y position
+          elif(j>y1): # max Y position
             y1 = j
 
     if DEBUG:
