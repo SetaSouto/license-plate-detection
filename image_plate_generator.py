@@ -13,6 +13,7 @@ class ImageGenerator():
 	images_paths = list()
 	plates_paths = list()
 	used_space = list()
+	overlapping_delta = 0.01
 
 
 	def get_image(self, name):
@@ -82,7 +83,15 @@ class ImageGenerator():
 		"""
 		Verifies if we are pasting a plate over another
 		"""
+		# Empty list, then save
+		for element in self.used_space:
+			if(offset[0] > element[0] and offset[0] < element[2]):
+				return True
+			if(offset[1] > element[1] and offset[1] < element[3]):
+				return True
 
+		# posX, posY, posX+width, posY+height
+		self.used_space.append([offset[0],offset[1],offset[0]+plate_d[0],offset[1]+plate_d[1]])
 		return False
 
 	def make_images(self, plates_by_image=1, repeat=True, min_image_percentage=0.1,max_image_percentage=0.3, allow_crop=False, paste_over=False):
@@ -133,7 +142,6 @@ class ImageGenerator():
 
 				# Calculate new dimensions
 				image_percentage = uniform(min_image_percentage,max_image_percentage)
-				print(image_percentage)
 
 				basewidth = int(im_width*image_percentage)
 				wpercent = (basewidth/float(pt_width))
@@ -144,14 +152,28 @@ class ImageGenerator():
 				pt_width, pt_height = plate.size
 
 				# New coords
-				offset = (0,0)
-				if(allow_crop):
-					offset = (randrange(-pt_width,im_width),randrange(-pt_height,im_height))
+				if(paste_over):
+					offset = (0,0)
+					if(allow_crop):
+						offset = (randrange(-pt_width,im_width),randrange(-pt_height,im_height))
+					else:
+						offset = (randrange(0,im_width-pt_width),randrange(0,im_height-pt_height))
+
+					image.paste(plate, offset, plate)
 				else:
-					offset = (randrange(0,im_width-pt_width),randrange(0,im_height-pt_height))
+					# Try to find a suitable spot with some overlapping allowed
+					occupied = True
+					offset = (0,0)
 
-				image.paste(plate, offset, plate)
+					while occupied:
+						if(allow_crop):
+							offset = (randrange(-pt_width,im_width),randrange(-pt_height,im_height))
+						else:
+							offset = (randrange(0,im_width-pt_width),randrange(0,im_height-pt_height))
 
+						occupied = self.position_is_occupied(offset,(pt_width,pt_height))
+
+					image.paste(plate, offset, plate)
 
 				# Modify bounding boxes
 				self.save_bounding_boxes(plate_name,offset,(pt_width,pt_height),(im_width,im_height), new_txt)
@@ -160,4 +182,9 @@ class ImageGenerator():
 			new_txt.close()
 
 ig = ImageGenerator()
-ig.make_images(3, False, 0.1, 0.5, True)
+ig.make_images(plates_by_image=3,
+			   repeat=False,
+			   min_image_percentage=0.1,
+			   max_image_percentage=0.5,
+			   allow_crop=False,
+			   paste_over=False)
