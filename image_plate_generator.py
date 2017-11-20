@@ -176,7 +176,8 @@ class ImageGenerator():
                 # Modify bounding boxes
                 self.save_bounding_boxes(plate_name, offset, (pt_width, pt_height), (im_width, im_height), new_txt)
 
-            image.save(self.result_dir + "/" + new_image_name + "_plates_" + str(plates_by_image) + ".png", "PNG")
+            image = image.convert("RGB")
+            image.save(self.result_dir + "/" + new_image_name + "_plates_" + str(plates_by_image) + ".jpg", "JPEG")
             new_txt.close()
 
 

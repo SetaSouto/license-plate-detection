@@ -20,13 +20,13 @@ def show_image_with_bounding_boxes(src):
     """
 
     def get_data():
-        if src[-3:] == "png":
+        if src[-3:] == "png" or src[-3:] == "jpg":
             labels_file = src[:-3] + "txt"
             with open(labels_file) as f:
                 return list(filter(lambda x: len(x) > 0,
                                    [list(map(float, line.split(" ")[1:])) for line in f.read().split("\n")]))
         else:
-            raise AssertionError("File not supported. Extension: " + src.plit(".")[-1])
+            raise AssertionError("File not supported. Extension: " + src.split(".")[-1])
 
     def transform_data(data):
         result = []
@@ -51,4 +51,4 @@ def show_image_with_bounding_boxes(src):
 
 
 # ----- MAIN SCRIPT ----- #
-show_image_with_bounding_boxes("data/dataset/n04334599_11_plates__plates_3.png")
+show_image_with_bounding_boxes("data/dataset/n04334599_11_plates__plates_3.jpg")
