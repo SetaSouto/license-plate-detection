@@ -1,9 +1,11 @@
+import json
 import os
 import numpy as np
 from scipy import stats
+from yolo_categories import CATEGORIES_REVERSED
 
 
-def count_classes(dir='data/generated_plates', simple_count=True):
+def count_classes(dir='data/dataset', simple_count=False):
     """
     Given a directory returns a dict with all the classes found and the quantity if each class. It counts over the
     .txt files.
@@ -16,15 +18,31 @@ def count_classes(dir='data/generated_plates', simple_count=True):
     """
     # Get only txt files
     txt_filenames = list(filter(lambda x: x[-3:] == 'txt', os.listdir(dir)))
+
+    counter = {}
+
     if (simple_count):
         # We suppose that the name is as AJGH23.txt
-        counter = {}
         for filename in txt_filenames:
             for letter in filename.split('.')[0]:
                 counter[letter] = 1 if not letter in counter else counter[letter] + 1
         return counter
+
     else:
-        raise NotImplementedError()
+        for filename in txt_filenames:
+            with open("{0}/{1}".format(dir, filename), 'r') as f:
+                for line in f.read().split("\n"):
+                    class_number = line.split(" ")[0]
+                    if class_number != "":
+                        if class_number in counter:
+                            counter[class_number] += 1
+                        else:
+                            counter[class_number] = 1
+        # Reverse and show the class name and not the number
+        final_result = {}
+        for key in counter:
+            final_result[CATEGORIES_REVERSED[int(key)]] = counter[key]
+        return final_result
 
 
 def max_from_json(data):
@@ -51,4 +69,7 @@ def print_some_stats(data):
     print(stats.describe(np.array(list(data.values()))))
 
 
-print_some_stats(count_classes())
+data = count_classes()
+print_some_stats(data)
+print("Sorted:", sort_by_quantity(data))
+print("Data: \n", json.dumps(data, indent=2, sort_keys=True))
