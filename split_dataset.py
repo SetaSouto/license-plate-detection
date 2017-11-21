@@ -7,7 +7,7 @@ jpg_filenames = list(filter(lambda x: x[-3:] == "jpg", os.listdir(data_dir)))
 
 # Randomly select the test dataset
 test_percentage = 0.1
-n_test = round(len(jpg_filenames) * test_percentage)
+n_test = int(round(len(jpg_filenames) * test_percentage))
 if n_test == 0: n_test = 1
 
 # Randomly select the images for testing
