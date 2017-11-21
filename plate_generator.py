@@ -19,7 +19,7 @@ class PlateGenerator():
     letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     numbers = "1234567890"
 
-    license_plate_bounding_box = [31, 24, 1330, 464]
+    license_plate_bounding_box = [31.0, 24.0, 1330.0, 464.0]
 
     def get_chars(self):
         """
@@ -122,10 +122,10 @@ class PlateGenerator():
         top side.
         Returns [x left, y top, x right, y bottom]
         """
-        x_offset = 5
-        y_offset = 10
-        width = 170
-        height = 255
+        x_offset = 5.0
+        y_offset = 10.0
+        width = 170.0
+        height = 255.0
 
         return [x + x_offset, y + y_offset, x + width, y + height]
 
@@ -153,7 +153,7 @@ class PlateGenerator():
 
 
 # ----- MAIN SCRIPT ----- #
-PlateGenerator().generate_random_plates(2000,
+PlateGenerator().generate_random_plates(1,
                                         show_bounding_box=False,
                                         show=False,
                                         save=True,
