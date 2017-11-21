@@ -12,6 +12,7 @@ if n_test == 0: n_test = 1
 
 # Randomly select the images for testing
 test_indexes = np.random.choice(len(jpg_filenames), n_test, replace=False)
+test_indexes = test_indexes.astype(int)
 
 jpg_filenames_copy = jpg_filenames[:]
 
