@@ -110,6 +110,7 @@ class ImageGenerator():
             repeat = True
 
         # Start combinations
+        counter = 0
         for image_name in self.images_paths:
 
             image = self.get_image(image_name)
@@ -179,6 +180,9 @@ class ImageGenerator():
             image = image.convert("RGB")
             image.save(self.result_dir + "/" + new_image_name + "_plates_" + str(plates_by_image) + ".jpg", "JPEG")
             new_txt.close()
+
+            counter += 1
+            print("Images generated until now:", counter)
 
 
 ig = ImageGenerator()
