@@ -12,19 +12,14 @@ if n_test == 0: n_test = 1
 
 # Randomly select the images for testing
 test_indexes = np.random.choice(len(jpg_filenames), n_test, replace=False)
-test_indexes = test_indexes.astype(int)
+test_indexes = set(test_indexes.astype(int))
 
-jpg_filenames_copy = list(jpg_filenames)
+train_indexes = set(np.arange(len(jpg_filenames))) - test_indexes
 
 with open("test.txt", "w") as f:
     for index in test_indexes:
-        print(index, len(jpg_filenames_copy), len(jpg_filenames))
-        # Write filename
         f.write(data_dir + jpg_filenames[index] + "\n")
-        # Remove from copy list
-        jpg_filenames_copy.pop(index)
 
-# Write from the copy list
 with open("train.txt", "w") as f:
-    for filename in jpg_filenames_copy:
-        f.write(data_dir + filename + "\n")
+    for index in train_indexes:
+        f.write(data_dir + jpg_filenames[index] + "\n")
