@@ -14,10 +14,11 @@ if n_test == 0: n_test = 1
 test_indexes = np.random.choice(len(jpg_filenames), n_test, replace=False)
 test_indexes = test_indexes.astype(int)
 
-jpg_filenames_copy = jpg_filenames[:]
+jpg_filenames_copy = list(jpg_filenames)
 
 with open("test.txt", "w") as f:
     for index in test_indexes:
+        print(index, len(jpg_filenames_copy), len(jpg_filenames))
         # Write filename
         f.write(data_dir + jpg_filenames[index] + "\n")
         # Remove from copy list
