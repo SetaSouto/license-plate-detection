@@ -79,10 +79,11 @@ class PlateGenerator():
         """
         Generates n license plates randomly.
         """
-        for _ in range(n):
+        for index in range(n):
             l1, l2, l3, l4, n1, n2 = self.get_chars()
             self.generate_plate(l1, l2, l3, l4, n1, n2, show_bounding_box=show_bounding_box, show=show, save=save,
                                 debug_bounding_box_normalized=debug_bounding_box_normalized)
+            print("Generated plates: ", index)
 
     def save_label(self, coordinates_and_chars, image_size):
         """
