@@ -92,3 +92,9 @@ print("Writing obj.names ...")
 with open('obj.names', 'w') as f:
     for c in classes:
         f.write(CLASSES_REVERSED[int(c)] + '\n')
+
+# Generate obj.data
+print("Writing obj.data ...")
+with open('obj.data', 'w') as f:
+    f.write(
+        "classes = {0}\ntrain = train.txt\nvalid = test.txt\nnames = obj.names\nbackup = backup/".format(len(classes)))
