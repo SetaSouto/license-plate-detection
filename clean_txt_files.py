@@ -14,4 +14,4 @@ for filename in list(filter(lambda x: x[-3:] == "txt", os.listdir(dataset_dir)))
             line = line.split(' ')
             line[0] = "0"
             line = ' '.join(line)
-            f.write(line)
+            f.write(line + '\n')
