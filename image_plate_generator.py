@@ -2,7 +2,7 @@ from os import listdir
 from random import choice, randrange, uniform
 
 from PIL import Image
-
+import datetime 
 
 class ImageGenerator():
     data_dir = "data"
@@ -105,6 +105,7 @@ class ImageGenerator():
         # Get directories
         self.explore_directories()
 
+
         if (len(self.plates_paths) / plates_by_image < len(self.images_paths)):
             print(" Repeating plates because : more images than ", plates_by_image, "plates by image")
             repeat = True
@@ -124,10 +125,13 @@ class ImageGenerator():
                 if not repeat:
                     self.plates_paths.remove(plate_names[i])
 
+            # =============== FILE NAMES =================
             # New base_name
             new_image_name = image_name[:image_name.find(".")] + "_plates_"
+        	
+            file_name = self.result_dir + "/" + new_image_name + "_plates_" + str(plates_by_image) + "_" +datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
-            new_txt = open(self.result_dir + "/" + new_image_name + "_plates_" + str(plates_by_image) + ".txt", "w")
+            new_txt = open(file_name + ".txt", "w")
 
             # Dimensions already occupied
             self.used_space = list()
@@ -178,7 +182,7 @@ class ImageGenerator():
                 self.save_bounding_boxes(plate_name, offset, (pt_width, pt_height), (im_width, im_height), new_txt)
 
             image = image.convert("RGB")
-            image.save(self.result_dir + "/" + new_image_name + "_plates_" + str(plates_by_image) + ".jpg", "JPEG")
+            image.save(file_name + ".jpg", "JPEG")
             new_txt.close()
 
             counter += 1
