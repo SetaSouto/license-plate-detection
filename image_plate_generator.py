@@ -2,7 +2,8 @@ from os import listdir
 from random import choice, randrange, uniform
 
 from PIL import Image
-import datetime 
+import datetime
+
 
 class ImageGenerator():
     data_dir = "data"
@@ -105,7 +106,6 @@ class ImageGenerator():
         # Get directories
         self.explore_directories()
 
-
         if (len(self.plates_paths) / plates_by_image < len(self.images_paths)):
             print(" Repeating plates because : more images than ", plates_by_image, "plates by image")
             repeat = True
@@ -128,8 +128,9 @@ class ImageGenerator():
             # =============== FILE NAMES =================
             # New base_name
             new_image_name = image_name[:image_name.find(".")] + "_plates_"
-        	
-            file_name = self.result_dir + "/" + new_image_name + "_plates_" + str(plates_by_image) + "_" +datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+            file_name = self.result_dir + "/" + new_image_name + "_plates_" + str(
+                plates_by_image) + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
             new_txt = open(file_name + ".txt", "w")
 
@@ -187,12 +188,3 @@ class ImageGenerator():
 
             counter += 1
             print("Images generated until now:", counter)
-
-
-ig = ImageGenerator()
-ig.make_images(plates_by_image=2,
-               repeat=False,
-               min_image_percentage=0.1,
-               max_image_percentage=0.4,
-               allow_crop=False,
-               paste_over=False)

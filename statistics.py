@@ -2,7 +2,7 @@ import json
 import os
 import numpy as np
 from scipy import stats
-from yolo_categories import CATEGORIES_REVERSED
+from CLASSES import CLASSES_REVERSED
 
 
 def count_classes(dir='data/dataset', simple_count=False):
@@ -41,7 +41,7 @@ def count_classes(dir='data/dataset', simple_count=False):
         # Reverse and show the class name and not the number
         final_result = {}
         for key in counter:
-            final_result[CATEGORIES_REVERSED[int(key)]] = counter[key]
+            final_result[CLASSES_REVERSED[int(key)]] = counter[key]
         return final_result
 
 

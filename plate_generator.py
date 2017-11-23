@@ -2,7 +2,7 @@ from random import choice
 
 from PIL import Image, ImageDraw, ImageFont
 
-from yolo_categories import CATEGORIES
+from CLASSES import CLASSES
 
 
 class PlateGenerator():
@@ -83,7 +83,7 @@ class PlateGenerator():
             l1, l2, l3, l4, n1, n2 = self.get_chars()
             self.generate_plate(l1, l2, l3, l4, n1, n2, show_bounding_box=show_bounding_box, show=show, save=save,
                                 debug_bounding_box_normalized=debug_bounding_box_normalized)
-            print("Generated plates: ", index)
+            print("Generated plates: ", index + 1)
 
     def save_label(self, coordinates_and_chars, image_size):
         """
@@ -98,7 +98,7 @@ class PlateGenerator():
             "category center_x center_y width height"
             """
             center_x, center_y, width, height = self.get_bounding_box_normalized(x, y, image_size)
-            category = CATEGORIES[c]
+            category = CLASSES[c]
             return "{0} {1} {2} {3} {4}\n".format(category, center_x, center_y, width, height)
 
         labels = self.result_dir + "/" + "".join([tuple[2] for tuple in coordinates_and_chars]) + ".txt"
@@ -107,7 +107,7 @@ class PlateGenerator():
             for x, y, c in coordinates_and_chars:
                 f.write(get_string(x, y, c))
             # Append bounding box for entire license plate
-            category = CATEGORIES["LICENSE-PLATE"]
+            category = CLASSES["LICENSE-PLATE"]
             center_x, center_y, width, height = self.normalize_bounding_box(self.license_plate_bounding_box,
                                                                             image_size)
             f.write("{0} {1} {2} {3} {4}".format(category,
@@ -150,11 +150,3 @@ class PlateGenerator():
         center_y /= image_size[1]
 
         return center_x, center_y, width, height
-
-
-# ----- MAIN SCRIPT ----- #
-PlateGenerator().generate_random_plates(500,
-                                        show_bounding_box=False,
-                                        show=False,
-                                        save=True,
-                                        debug_bounding_box_normalized=False)
