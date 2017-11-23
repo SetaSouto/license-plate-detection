@@ -51,4 +51,4 @@ def show_image_with_bounding_boxes(src):
 
 
 # ----- MAIN SCRIPT ----- #
-show_image_with_bounding_boxes("data/dataset/n04334599_11_plates__plates_3.jpg")
+show_image_with_bounding_boxes("data/dataset/n04335209_4621_plates__plates_1.jpg")
