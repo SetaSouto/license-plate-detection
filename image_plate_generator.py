@@ -190,7 +190,7 @@ class ImageGenerator():
 
 
 ig = ImageGenerator()
-ig.make_images(plates_by_image=1,
+ig.make_images(plates_by_image=2,
                repeat=False,
                min_image_percentage=0.1,
                max_image_percentage=0.4,

@@ -153,7 +153,7 @@ class PlateGenerator():
 
 
 # ----- MAIN SCRIPT ----- #
-PlateGenerator().generate_random_plates(1,
+PlateGenerator().generate_random_plates(500,
                                         show_bounding_box=False,
                                         show=False,
                                         save=True,
