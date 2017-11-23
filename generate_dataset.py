@@ -7,7 +7,7 @@ import os
 from image_plate_generator import ImageGenerator
 from plate_generator import PlateGenerator
 from split_dataset import split_dataset
-from CLASSES import CLASSES
+from CLASSES import CLASSES, CLASSES_REVERSED
 
 # Parse arguments
 parser = argparse.ArgumentParser(description='Generate the dataset to train YOLO to detect and read license plates.')
@@ -70,7 +70,8 @@ if not args.only_clean_txt:
     split_dataset()
 
 # Filter the classes on the labels
-classes = list(set(map(lambda x: str(CLASSES[x]), args.classes)))
+classes = sorted(list(set(map(lambda x: str(CLASSES[x]), args.classes))))
+print("Classes order: {0}".format(classes))
 for filename in list(filter(lambda x: x[-3:] == "txt", os.listdir(args.dataset_dir))):
     # Read the txt file
     file_path = os.path.join(args.dataset_dir, filename)
@@ -82,6 +83,12 @@ for filename in list(filter(lambda x: x[-3:] == "txt", os.listdir(args.dataset_d
                                      content.split('\n'))  # Separate by line
         for line in license_plate_lines:
             line = line.split(' ')
-            line[0] = str(classes.index((line[0])))
+            line[0] = str(classes.index(line[0]))
             line = ' '.join(line)
             f.write(line + '\n')
+
+# Generate obj.names
+print("Writing obj.names ...")
+with open('obj.names', 'w') as f:
+    for c in classes:
+        f.write(CLASSES_REVERSED[int(c)] + '\n')
